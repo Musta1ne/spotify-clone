@@ -1,0 +1,93 @@
+:root {
+  --spotify-green: #1DB954;
+  --spotify-green-hover: #1ed760;
+  --spotify-black: #121212;
+  --spotify-grey: #282828;
+  --spotify-light-grey: #B3B3B3;
+  --spotify-dark-grey: #181818;
+  --spotify-white: #FFFFFF;
+  --nav-black: rgba(0, 0, 0, 0.8);
+  --background-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 2000 2000' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Animaciones Globales */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px rgba(29, 185, 84, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(29, 185, 84, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(29, 185, 84, 0.5); }
+}
+
+/* Estilos Base */
+body {
+  background-color: var(--spotify-black);
+  color: var(--spotify-white);
+  font-family: 'Circular Std', -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--spotify-black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--spotify-grey);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--spotify-green);
+}
+
+/* Clases de utilidad */
+.spotify-button {
+  background: var(--spotify-green);
+  color: var(--spotify-white);
+  border: none;
+  border-radius: 500px;
+  padding: 14px 32px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.spotify-button:hover {
+  background: var(--spotify-green-hover);
+  transform: scale(1.04);
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, var(--spotify-green), #4CAF50);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
