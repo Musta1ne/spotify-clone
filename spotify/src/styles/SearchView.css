@@ -1,7 +1,36 @@
 .search-container {
   padding: 20px;
   background: linear-gradient(180deg, #121212 0%, #000000 100%);
-  min-height: 100vh;
+  height: 100vh;
+  position: relative;
+  overflow-y: auto;
+}
+
+.search-container::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 60%;
+  background-image: url('https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_White.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.search-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.artists-grid {
+  position: relative;
+  z-index: 1;
 }
 
 .search-wrapper {
