@@ -1,0 +1,49 @@
+.artist-card {
+  background-color: #282828;
+  border-radius: 8px;
+  padding: 20px;
+  text-decoration: none;
+  color: white;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.artist-card:hover {
+  background-color: #3E3E3E;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.artist-card:hover::before {
+  opacity: 0.1;
+}
+
+.artist-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 60px rgba(0,0,0,0.5);
+}
+
+.artist-card:hover .artist-image {
+  transform: scale(1.05);
+  animation: pulseGlow 2s infinite;
+}
+
+.artist-name {
+  margin: 0;
+  text-align: center;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}

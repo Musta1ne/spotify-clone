@@ -1,0 +1,51 @@
+.album-card {
+  background-color: #282828;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.album-card:hover {
+  background-color: #3E3E3E;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.album-image {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  transition: transform 0.3s ease;
+}
+
+.album-card:hover .album-image {
+  transform: scale(1.05);
+}
+
+.album-info {
+  position: relative;
+}
+
+.album-name {
+  margin: 0 0 8px 0;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.album-year {
+  margin: 0;
+  color: #B3B3B3;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.3px;
+}
