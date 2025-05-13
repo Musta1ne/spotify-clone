@@ -109,3 +109,41 @@
   -webkit-box-shadow: 0 0 0 30px #282828 inset;
   -webkit-text-fill-color: white;
 }
+
+
+.search-container {
+  display: flex;
+  gap: 20px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.favorites-sidebar {
+  width: 300px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-y: auto;
+}
+
+.favorites-sidebar h2 {
+  color: white;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.favorites-list .artist-card {
+  width: 100%;
+}

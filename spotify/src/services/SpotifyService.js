@@ -67,6 +67,30 @@ class SpotifyService {
       throw new Error('Error al obtener álbumes del artista');
     }
   }
+
+  getFavoriteArtists() {
+    const favorites = localStorage.getItem('favoriteArtists');
+    return favorites ? JSON.parse(favorites) : [];
+  }
+
+  toggleFavoriteArtist(artist) {
+    const favorites = this.getFavoriteArtists();
+    const index = favorites.findIndex(fav => fav.id === artist.id);
+    
+    if (index === -1) {
+      favorites.push(artist);
+    } else {
+      favorites.splice(index, 1);
+    }
+    
+    localStorage.setItem('favoriteArtists', JSON.stringify(favorites));
+    return favorites;
+  }
+
+  isFavoriteArtist(artistId) {
+    const favorites = this.getFavoriteArtists();
+    return favorites.some(artist => artist.id === artistId);
+  }
 }
 
 export default new SpotifyService();
