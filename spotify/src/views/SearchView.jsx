@@ -18,8 +18,7 @@ function SearchView() {
     const searchArtists = async () => {
       if (searchTerm.trim()) {
         try {
-          const credentials = JSON.parse(localStorage.getItem('spotifyCredentials'));
-          const results = await SpotifyService.searchArtists(searchTerm, credentials.token);
+          const results = await SpotifyService.searchArtists(searchTerm);
           setArtists(results);
           setError('');
         } catch (err) {
@@ -53,11 +52,17 @@ function SearchView() {
             </button>
           )}
         </div>
+        
         {error && <p className="error-message">{error}</p>}
-        <div className="artists-grid">
-          {artists.map(artist => (
-            <ArtistCard key={artist.id} artist={artist} />
-          ))}
+        
+        <div className="search-results">
+          <div className="artists-grid">
+            {artists.map(artist => (
+              <div className="artist-card-wrapper" key={artist.id}>
+                <ArtistCard artist={artist} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       
@@ -65,7 +70,9 @@ function SearchView() {
         <h2>Artistas Favoritos</h2>
         <div className="favorites-list">
           {favoriteArtists.map(artist => (
-            <ArtistCard key={artist.id} artist={artist} />
+            <div className="favorite-card-wrapper" key={artist.id}>
+              <ArtistCard artist={artist} />
+            </div>
           ))}
         </div>
       </div>

@@ -44,38 +44,37 @@ function ArtistDetailView() {
 
   return (
     <div className="detail-container">
-      <button 
-        className="back-button"
-        onClick={() => navigate('/search')}
-      >
-        <IoArrowBack size={24} />
-        Volver a búsqueda
+      <button className="back-button" onClick={() => navigate('/search')}>
+        <IoArrowBack size={20} />
+        Volver
       </button>
 
       <div className="artist-header">
-        <img 
-          className="artist-image"
-          src={artist.images[0]?.url || 'https://via.placeholder.com/200'} 
-          alt={artist.name} 
-        />
-        <div className="artist-info-header">
-          <h1 className="artist-name">{artist.name}</h1>
-          <button 
-            className={`favorite-button ${isFavorite ? 'is-favorite' : ''}`}
-            onClick={handleFavoriteClick}
-          >
-            {isFavorite ? <IoHeart size={24} /> : <IoHeartOutline size={24} />}
-          </button>
+        <div className="artist-profile">
+          <img 
+            className="artist-image"
+            src={artist.images[0]?.url || 'https://via.placeholder.com/200'} 
+            alt={artist.name} 
+          />
+          <div className="artist-info">
+            <h1>{artist.name}</h1>
+            <button 
+              className={`favorite-button ${isFavorite ? 'is-favorite' : ''}`}
+              onClick={handleFavoriteClick}
+            >
+              {isFavorite ? <IoHeart size={24} /> : <IoHeartOutline size={24} />}
+            </button>
+          </div>
         </div>
       </div>
 
-      <h2 className="albums-title">Álbumes</h2>
-      <div className="albums-grid">
-        {albums.map((album, index) => (
-          <div key={album.id} style={{"--i": index + 1}}>
-            <AlbumCard album={album} />
-          </div>
-        ))}
+      <div className="content-section">
+        <h2 className="section-title">Álbumes</h2>
+        <div className="albums-grid">
+          {albums.map((album) => (
+            <AlbumCard key={album.id} album={album} />
+          ))}
+        </div>
       </div>
     </div>
   );

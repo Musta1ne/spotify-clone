@@ -4,67 +4,120 @@ class SpotifyService {
   constructor() {
     this.baseUrl = 'https://api.spotify.com/v1';
     this.tokenUrl = 'https://accounts.spotify.com/api/token';
+    this.clientId = '8edcbca575ea4db79c5467d20c38e492';
+    this.clientSecret = 'd3cd51a7e00f4a9ca698be9f1a57c072';
+    this.token = null;
   }
 
-  async getAccessToken(clientId, clientSecret) {
-    // Usar btoa en lugar de Buffer para codificar en base64
-    const credentials = btoa(`${clientId}:${clientSecret}`);
-    
+  async initialize() {
     try {
-      const response = await axios.post(this.tokenUrl, 
-        'grant_type=client_credentials',
-        {
-          headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
+      const formData = new URLSearchParams();
+      formData.append('grant_type', 'client_credentials');
+      formData.append('client_id', this.clientId);
+      formData.append('client_secret', this.clientSecret);
+      
+      const response = await axios.post(this.tokenUrl, formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
-      );
-      return response.data.access_token;
+      });
+      
+      this.token = response.data.access_token;
+      return true;
     } catch (error) {
-      console.error('Error de autenticación:', error.response?.data || error);
-      throw new Error('Error al obtener el token de acceso');
+      console.error('Auth Error:', error);
+      return false;
     }
   }
 
-  async searchArtists(query, token) {
+  async searchArtists(query) {
+    if (!this.token) {
+      await this.initialize();
+    }
+
     try {
       const response = await axios.get(`${this.baseUrl}/search`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { 'Authorization': `Bearer ${this.token}` },
         params: {
           q: query,
           type: 'artist',
           limit: 20
         }
       });
-      return response.data.artists.items;
+      return response.data.artists?.items || [];
     } catch (error) {
-      throw new Error('Error al buscar artistas');
+      console.error('Search error:', error);
+      return [];
     }
   }
 
-  async getArtist(artistId, token) {
+  async getArtist(artistId) {
+    if (!this.token) {
+      await this.initialize();
+    }
+
     try {
       const response = await axios.get(`${this.baseUrl}/artists/${artistId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${this.token}` }
       });
       return response.data;
     } catch (error) {
-      throw new Error('Error al obtener información del artista');
+      console.error('Artist error:', error);
+      return null;
     }
   }
 
-  async getArtistAlbums(artistId, token) {
+  async getArtistAlbums(artistId) {
+    if (!this.token) {
+      await this.initialize();
+    }
+
     try {
       const response = await axios.get(`${this.baseUrl}/artists/${artistId}/albums`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { 'Authorization': `Bearer ${this.token}` },
         params: {
           limit: 50
         }
       });
-      return response.data.items;
+      return response.data.items || [];
     } catch (error) {
-      throw new Error('Error al obtener álbumes del artista');
+      console.error('Albums error:', error);
+      return [];
+    }
+  }
+
+  async getAlbumTracks(albumId) {
+    if (!this.token) {
+      await this.initialize();
+    }
+
+    try {
+      const response = await axios.get(`${this.baseUrl}/albums/${albumId}/tracks`, {
+        headers: { 'Authorization': `Bearer ${this.token}` },
+        params: {
+          limit: 50
+        }
+      });
+      return response.data.items || [];
+    } catch (error) {
+      console.error('Tracks error:', error);
+      return [];
+    }
+  }
+
+  async getAlbumDetails(albumId) {
+    if (!this.token) {
+      await this.initialize();
+    }
+
+    try {
+      const response = await axios.get(`${this.baseUrl}/albums/${albumId}`, {
+        headers: { 'Authorization': `Bearer ${this.token}` }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Album details error:', error);
+      return null;
     }
   }
 

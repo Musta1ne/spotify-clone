@@ -1,36 +1,27 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import LoginView from './views/LoginView';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
 import SearchView from './views/SearchView';
 import ArtistDetailView from './views/ArtistDetailView';
+import AlbumDetailView from './views/AlbumDetailView';
+import SpotifyService from './services/SpotifyService';
 import './App.css';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
   useEffect(() => {
-    const credentials = localStorage.getItem('spotifyCredentials');
-    if (credentials) {
-      setIsAuthenticated(true);
-    }
+    const initializeSpotify = async () => {
+      await SpotifyService.initialize();
+    };
+    initializeSpotify();
   }, []);
 
   return (
     <div className="app-container">
       <BrowserRouter>
         <Routes>
-          <Route 
-            path="/" 
-            element={!isAuthenticated ? <LoginView setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/search" />} 
-          />
-          <Route 
-            path="/search" 
-            element={isAuthenticated ? <SearchView /> : <Navigate to="/" />} 
-          />
-          <Route 
-            path="/artist/:id" 
-            element={isAuthenticated ? <ArtistDetailView /> : <Navigate to="/" />} 
-          />
+          <Route path="/" element={<SearchView />} />
+          <Route path="/search" element={<SearchView />} />
+          <Route path="/artist/:id" element={<ArtistDetailView />} />
+          <Route path="/album/:id" element={<AlbumDetailView />} />
         </Routes>
       </BrowserRouter>
     </div>

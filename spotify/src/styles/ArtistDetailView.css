@@ -1,139 +1,150 @@
+:root {
+  --spotify-green: #1DB954;
+  --transition-default: all 0.3s ease;
+  --shadow-default: 0 4px 60px rgba(0, 0, 0, .5);
+}
+
 .detail-container {
-  padding: 30px;
-  background: linear-gradient(180deg, #121212 0%, #000000 100%);
-  min-height: 100vh;
   position: relative;
+  background: #121212;
+  color: white;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.favorite-button {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: rgba(29, 185, 84, 0.1);
+  border: 2px solid #1DB954;
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  z-index: 10;
+}
+
+/* Keep existing hover, active, and animation styles */
+
+@media (max-width: 768px) {
+  .favorite-button {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+  }
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
 }
 
 .artist-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 40px;
-  gap: 30px;
-  position: relative;
+  margin-bottom: 32px;
 }
 
-.artist-header::after {
-  content: '';
-  position: absolute;
-  bottom: -20px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #1DB954, transparent);
+.artist-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
 .artist-image {
-  width: 200px;
-  height: 200px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
-  transition: transform 0.3s ease;
+  object-fit: cover;
 }
 
-.artist-image:hover {
-  transform: scale(1.05);
+.artist-info {
+  text-align: center;
 }
 
-.artist-name {
-  margin: 0;
-  color: white;
-  font-size: 48px;
-  position: relative;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.albums-title {
-  color: white;
-  margin-bottom: 20px;
+.artist-info h1 {
   font-size: 28px;
-  position: relative;
-  padding-left: 20px;
+  margin-bottom: 12px;
 }
 
-.albums-title::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 4px;
-  height: 24px;
+.favorite-button:hover {
+  transform: scale(1.1);
+  background: rgba(29, 185, 84, 0.2);
+  box-shadow: 0 0 20px rgba(29, 185, 84, 0.3);
+}
+
+.favorite-button:active {
+  transform: scale(0.95);
+}
+
+.favorite-button.is-favorite {
   background: #1DB954;
-  transform: translateY(-50%);
-  border-radius: 2px;
+  animation: pulse 0.3s ease;
+}
+
+.favorite-button.is-favorite svg {
+  color: white;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Restored original albums section styles */
+.content-section {
+  position: relative;
+  z-index: 2;
+  padding: 16px 24px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
 }
 
 .albums-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 24px;
 }
 
-.error-message {
-  padding: 20px;
-  color: #ff4b4b;
-  text-align: center;
-  font-size: 18px;
-  background: rgba(255, 75, 75, 0.1);
+.albums-grid a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.album-card {
+  background: var(--background-light);
   border-radius: 8px;
-}
-
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 50vh;
-  color: #1DB954;
-  font-size: 20px;
-}
-
-.albums-grid > div {
-  transition: transform 0.3s ease;
-}
-
-.albums-grid > div:hover {
-  transform: translateY(-5px);
-}
-
-.artist-info-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.favorite-button {
-  background: none;
-  border: none;
-  color: #b3b3b3;
+  padding: 16px;
+  transition: var(--transition-default);
   cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: all 0.3s ease;
 }
 
-.favorite-button:hover {
-  color: #1DB954;
-  transform: scale(1.1);
-}
-
-.favorite-button.is-favorite {
-  color: #1DB954;
-}
-
-.back-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(0, 0, 0, 0.3);
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  transition: all 0.3s ease;
-}
-
-.back-button:hover {
-  background: rgba(0, 0, 0, 0.5);
-  transform: translateX(-5px);
+.album-card:hover {
+  background: #333333;
+  transform: translateY(-4px);
 }
