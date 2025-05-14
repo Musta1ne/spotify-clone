@@ -2,21 +2,24 @@ import axios from 'axios';
 
 class SpotifyService {
   constructor() {
+    if (!process.env.REACT_APP_SPOTIFY_CLIENT_ID || !process.env.REACT_APP_SPOTIFY_CLIENT_SECRET) {
+      console.error('Spotify credentials are not properly configured');
+    }
     this.baseUrl = 'https://api.spotify.com/v1';
     this.tokenUrl = 'https://accounts.spotify.com/api/token';
-    this.clientId = '8edcbca575ea4db79c5467d20c38e492';
-    this.clientSecret = 'd3cd51a7e00f4a9ca698be9f1a57c072';
+    this.clientId = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
+    this.clientSecret = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET;
     this.token = null;
-    this.tokenExpirationTime = null;
+    this.tokenExpiration = null;
   }
 
   async initialize() {
-    // Verificar si el token actual sigue siendo válido
-    if (this.token && this.tokenExpirationTime && Date.now() < this.tokenExpirationTime) {
-      return true;
-    }
-
     try {
+      // Check if token is expired
+      if (this.token && this.tokenExpiration && Date.now() < this.tokenExpiration) {
+        return true;
+      }
+
       const formData = new URLSearchParams();
       formData.append('grant_type', 'client_credentials');
       formData.append('client_id', this.clientId);
@@ -29,27 +32,20 @@ class SpotifyService {
       });
       
       this.token = response.data.access_token;
-      // Establecer tiempo de expiración (1 hora menos 5 minutos por seguridad)
-      this.tokenExpirationTime = Date.now() + (response.data.expires_in - 300) * 1000;
+      // Set token expiration (subtract 1 minute for safety)
+      this.tokenExpiration = Date.now() + (response.data.expires_in - 60) * 1000;
       return true;
     } catch (error) {
-      console.error('Error de autenticación:', error);
-      this.token = null;
-      this.tokenExpirationTime = null;
+      console.error('Auth Error:', error);
       return false;
     }
   }
 
-  async ensureValidToken() {
-    if (!await this.initialize()) {
-      throw new Error('No se pudo obtener un token válido');
-    }
-  }
-
-  // Modificar el inicio de cada método que hace peticiones a la API
   async searchArtists(query) {
-    await this.ensureValidToken();
-    
+    if (!this.token) {
+      await this.initialize();
+    }
+
     try {
       const response = await axios.get(`${this.baseUrl}/search`, {
         headers: { 'Authorization': `Bearer ${this.token}` },
@@ -61,12 +57,7 @@ class SpotifyService {
       });
       return response.data.artists?.items || [];
     } catch (error) {
-      if (error.response?.status === 401) {
-        this.token = null;
-        this.tokenExpirationTime = null;
-        return this.searchArtists(query);
-      }
-      console.error('Error en la búsqueda:', error);
+      console.error('Search error:', error);
       return [];
     }
   }
