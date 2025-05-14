@@ -2,20 +2,17 @@ import axios from 'axios';
 
 class SpotifyService {
   constructor() {
-    if (!process.env.REACT_APP_SPOTIFY_CLIENT_ID || !process.env.REACT_APP_SPOTIFY_CLIENT_SECRET) {
-      console.error('Spotify credentials are not properly configured');
-    }
     this.baseUrl = 'https://api.spotify.com/v1';
     this.tokenUrl = 'https://accounts.spotify.com/api/token';
-    this.clientId = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
-    this.clientSecret = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET;
+    // Use hardcoded credentials temporarily for testing
+    this.clientId = '8edcbca575ea4db79c5467d20c38e492';
+    this.clientSecret = 'd3cd51a7e00f4a9ca698be9f1a57c072';
     this.token = null;
     this.tokenExpiration = null;
   }
 
   async initialize() {
     try {
-      // Check if token is expired
       if (this.token && this.tokenExpiration && Date.now() < this.tokenExpiration) {
         return true;
       }
@@ -32,32 +29,49 @@ class SpotifyService {
       });
       
       this.token = response.data.access_token;
-      // Set token expiration (subtract 1 minute for safety)
       this.tokenExpiration = Date.now() + (response.data.expires_in - 60) * 1000;
+      console.log('Token obtained successfully'); // Debug log
       return true;
     } catch (error) {
-      console.error('Auth Error:', error);
+      console.error('Auth Error Details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
       return false;
     }
   }
 
   async searchArtists(query) {
     if (!this.token) {
-      await this.initialize();
+      const initialized = await this.initialize();
+      if (!initialized) {
+        console.error('Failed to initialize token');
+        return [];
+      }
     }
 
     try {
+      console.log('Searching for:', query); // Debug log
       const response = await axios.get(`${this.baseUrl}/search`, {
-        headers: { 'Authorization': `Bearer ${this.token}` },
+        headers: { 
+          'Authorization': `Bearer ${this.token}`,
+          'Accept': 'application/json'
+        },
         params: {
           q: query,
           type: 'artist',
           limit: 20
         }
       });
+      console.log('Search response:', response.data); // Debug log
       return response.data.artists?.items || [];
     } catch (error) {
-      console.error('Search error:', error);
+      console.error('Search error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
       return [];
     }
   }
