@@ -4,32 +4,44 @@ class SpotifyService {
   constructor() {
     this.baseUrl = 'https://api.spotify.com/v1';
     this.tokenUrl = 'https://accounts.spotify.com/api/token';
-    // Replace these with your new credentials from Spotify Developer Dashboard
-    this.clientId = 'your_new_client_id';
-    this.clientSecret = 'your_new_client_secret';
+    this.clientId = '8edcbca575ea4db79c5467d20c38e492';
+    this.clientSecret = 'd3cd51a7e00f4a9ca698be9f1a57c072';
     this.token = null;
     this.tokenExpiration = null;
   }
 
   async initialize() {
     try {
-      const auth = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
+      if (this.token && this.tokenExpiration && Date.now() < this.tokenExpiration) {
+        return true;
+      }
+
+      const formData = new URLSearchParams();
+      formData.append('grant_type', 'client_credentials');
+      formData.append('client_id', this.clientId);
+      formData.append('client_secret', this.clientSecret);
       
-      const response = await axios.post(this.tokenUrl, 'grant_type=client_credentials', {
+      const response = await axios.post(this.tokenUrl, formData, {
         headers: {
-          'Authorization': `Basic ${auth}`,
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
       
-      this.token = response.data.access_token;
-      this.tokenExpiration = Date.now() + (response.data.expires_in - 60) * 1000;
-      return true;
+      if (response.data && response.data.access_token) {
+        this.token = response.data.access_token;
+        this.tokenExpiration = Date.now() + (response.data.expires_in - 60) * 1000;
+        console.log('Token obtained successfully');
+        return true;
+      } else {
+        console.error('Invalid token response:', response.data);
+        return false;
+      }
     } catch (error) {
       console.error('Auth Error Details:', {
         message: error.message,
         response: error.response?.data,
-        status: error.response?.status
+        status: error.response?.status,
+        config: error.config
       });
       return false;
     }
