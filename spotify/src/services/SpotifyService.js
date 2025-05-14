@@ -4,33 +4,26 @@ class SpotifyService {
   constructor() {
     this.baseUrl = 'https://api.spotify.com/v1';
     this.tokenUrl = 'https://accounts.spotify.com/api/token';
-    // Use hardcoded credentials temporarily for testing
-    this.clientId = '8edcbca575ea4db79c5467d20c38e492';
-    this.clientSecret = 'd3cd51a7e00f4a9ca698be9f1a57c072';
+    // Replace these with your new credentials from Spotify Developer Dashboard
+    this.clientId = 'your_new_client_id';
+    this.clientSecret = 'your_new_client_secret';
     this.token = null;
     this.tokenExpiration = null;
   }
 
   async initialize() {
     try {
-      if (this.token && this.tokenExpiration && Date.now() < this.tokenExpiration) {
-        return true;
-      }
-
-      const formData = new URLSearchParams();
-      formData.append('grant_type', 'client_credentials');
-      formData.append('client_id', this.clientId);
-      formData.append('client_secret', this.clientSecret);
+      const auth = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
       
-      const response = await axios.post(this.tokenUrl, formData, {
+      const response = await axios.post(this.tokenUrl, 'grant_type=client_credentials', {
         headers: {
+          'Authorization': `Basic ${auth}`,
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
       
       this.token = response.data.access_token;
       this.tokenExpiration = Date.now() + (response.data.expires_in - 60) * 1000;
-      console.log('Token obtained successfully'); // Debug log
       return true;
     } catch (error) {
       console.error('Auth Error Details:', {
