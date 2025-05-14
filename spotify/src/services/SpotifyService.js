@@ -9,7 +9,6 @@ class SpotifyService {
     this.token = null;
     this.tokenExpiration = null;
   }
-
   async initialize() {
     try {
       if (this.token && this.tokenExpiration && Date.now() < this.tokenExpiration) {
@@ -23,28 +22,89 @@ class SpotifyService {
       
       const response = await axios.post(this.tokenUrl, formData, {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json'
+        },
+        withCredentials: false
       });
       
       if (response.data && response.data.access_token) {
         this.token = response.data.access_token;
         this.tokenExpiration = Date.now() + (response.data.expires_in - 60) * 1000;
-        console.log('Token obtained successfully');
         return true;
-      } else {
-        console.error('Invalid token response:', response.data);
-        return false;
       }
+      return false;
     } catch (error) {
-      console.error('Auth Error Details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        config: error.config
-      });
+      console.error('Auth Error:', error.response?.data || error.message);
+      await this.handleTokenError();
       return false;
     }
+  }
+
+  async handleTokenError() {
+    this.token = null;
+    this.tokenExpiration = null;
+    // Retry initialization after a short delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return this.initialize();
+  }
+
+  async makeApiRequest(url, params = {}) {
+    if (!this.token) {
+      const initialized = await this.initialize();
+      if (!initialized) return null;
+    }
+
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Accept': 'application/json'
+        },
+        params,
+        withCredentials: false
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 401) {
+        // Token expired, retry once
+        this.token = null;
+        const initialized = await this.initialize();
+        if (initialized) {
+          return this.makeApiRequest(url, params);
+        }
+      }
+      console.error('API Request Error:', error.response?.data || error.message);
+      return null;
+    }
+  }
+
+  async getArtist(artistId) {
+    const data = await this.makeApiRequest(`${this.baseUrl}/artists/${artistId}`);
+    return data;
+  }
+
+  async getArtistAlbums(artistId) {
+    const data = await this.makeApiRequest(`${this.baseUrl}/artists/${artistId}/albums`, {
+      limit: 50,
+      market: 'ES'  // Add market parameter
+    });
+    return data?.items || [];
+  }
+
+  async getAlbumTracks(albumId) {
+    const data = await this.makeApiRequest(`${this.baseUrl}/albums/${albumId}/tracks`, {
+      limit: 50,
+      market: 'ES'  // Add market parameter
+    });
+    return data?.items || [];
+  }
+
+  async getAlbumDetails(albumId) {
+    const data = await this.makeApiRequest(`${this.baseUrl}/albums/${albumId}`, {
+      market: 'ES'  // Add market parameter
+    });
+    return data;
   }
 
   async searchArtists(query) {
@@ -78,76 +138,6 @@ class SpotifyService {
         status: error.response?.status
       });
       return [];
-    }
-  }
-
-  async getArtist(artistId) {
-    if (!this.token) {
-      await this.initialize();
-    }
-
-    try {
-      const response = await axios.get(`${this.baseUrl}/artists/${artistId}`, {
-        headers: { 'Authorization': `Bearer ${this.token}` }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Artist error:', error);
-      return null;
-    }
-  }
-
-  async getArtistAlbums(artistId) {
-    if (!this.token) {
-      await this.initialize();
-    }
-
-    try {
-      const response = await axios.get(`${this.baseUrl}/artists/${artistId}/albums`, {
-        headers: { 'Authorization': `Bearer ${this.token}` },
-        params: {
-          limit: 50
-        }
-      });
-      return response.data.items || [];
-    } catch (error) {
-      console.error('Albums error:', error);
-      return [];
-    }
-  }
-
-  async getAlbumTracks(albumId) {
-    if (!this.token) {
-      await this.initialize();
-    }
-
-    try {
-      const response = await axios.get(`${this.baseUrl}/albums/${albumId}/tracks`, {
-        headers: { 'Authorization': `Bearer ${this.token}` },
-        params: {
-          limit: 50
-        }
-      });
-      return response.data.items || [];
-    } catch (error) {
-      console.error('Tracks error:', error);
-      return [];
-    }
-  }
-
-  async getAlbumDetails(albumId) {
-    if (!this.token) {
-      await this.initialize();
-    }
-
-    try {
-      const response = await axios.get(`${this.baseUrl}/albums/${albumId}`, {
-        headers: { 'Authorization': `Bearer ${this.token}` }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Album details error:', error);
-      return null;
     }
   }
 
