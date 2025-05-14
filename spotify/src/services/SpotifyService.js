@@ -7,9 +7,15 @@ class SpotifyService {
     this.clientId = '8edcbca575ea4db79c5467d20c38e492';
     this.clientSecret = 'd3cd51a7e00f4a9ca698be9f1a57c072';
     this.token = null;
+    this.tokenExpirationTime = null;
   }
 
   async initialize() {
+    // Verificar si el token actual sigue siendo válido
+    if (this.token && this.tokenExpirationTime && Date.now() < this.tokenExpirationTime) {
+      return true;
+    }
+
     try {
       const formData = new URLSearchParams();
       formData.append('grant_type', 'client_credentials');
@@ -23,18 +29,27 @@ class SpotifyService {
       });
       
       this.token = response.data.access_token;
+      // Establecer tiempo de expiración (1 hora menos 5 minutos por seguridad)
+      this.tokenExpirationTime = Date.now() + (response.data.expires_in - 300) * 1000;
       return true;
     } catch (error) {
-      console.error('Auth Error:', error);
+      console.error('Error de autenticación:', error);
+      this.token = null;
+      this.tokenExpirationTime = null;
       return false;
     }
   }
 
-  async searchArtists(query) {
-    if (!this.token) {
-      await this.initialize();
+  async ensureValidToken() {
+    if (!await this.initialize()) {
+      throw new Error('No se pudo obtener un token válido');
     }
+  }
 
+  // Modificar el inicio de cada método que hace peticiones a la API
+  async searchArtists(query) {
+    await this.ensureValidToken();
+    
     try {
       const response = await axios.get(`${this.baseUrl}/search`, {
         headers: { 'Authorization': `Bearer ${this.token}` },
@@ -46,7 +61,12 @@ class SpotifyService {
       });
       return response.data.artists?.items || [];
     } catch (error) {
-      console.error('Search error:', error);
+      if (error.response?.status === 401) {
+        this.token = null;
+        this.tokenExpirationTime = null;
+        return this.searchArtists(query);
+      }
+      console.error('Error en la búsqueda:', error);
       return [];
     }
   }
