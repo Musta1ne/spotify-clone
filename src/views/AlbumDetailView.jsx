@@ -1,10 +1,12 @@
 import './AlbumDetailView.css';
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { IoArrowBack } from 'react-icons/io5';
 import SpotifyService from '../services/SpotifyService';
 
 const AlbumDetailView = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [album, setAlbum] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -33,6 +35,13 @@ const AlbumDetailView = () => {
 
     return (
         <div className="album-detail">
+            <button 
+                className="back-button"
+                onClick={() => navigate(`/artist/${album.artists[0].id}`)}
+            >
+                <IoArrowBack /> Volver al artista
+            </button>
+
             <div className="album-header">
                 <img src={album.images[0]?.url} alt={album.name} className="album-cover" />
                 <div className="album-info">
