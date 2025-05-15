@@ -22,4 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-src/config/spotify.config.js
+.env
+.env.local
+src/config/spotify.config.local.js
