@@ -1,11 +1,12 @@
 import axios from 'axios';
-import spotifyConfig from '../config/spotify.config';
 
 class SpotifyService {
   constructor() {
     this.baseUrl = 'https://api.spotify.com/v1';
     this.tokenUrl = 'https://accounts.spotify.com/api/token';
     this.token = null;
+    this.clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+    this.clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
   }
 
   async initializeToken() {
@@ -16,7 +17,7 @@ class SpotifyService {
   }
 
   async getAccessToken() {
-    const credentials = btoa(`${spotifyConfig.clientId}:${spotifyConfig.clientSecret}`);
+    const credentials = btoa(`${this.clientId}:${this.clientSecret}`);
     
     try {
       const response = await axios.post(this.tokenUrl, 
