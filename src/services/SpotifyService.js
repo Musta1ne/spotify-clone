@@ -5,8 +5,6 @@ class SpotifyService {
     this.baseUrl = 'https://api.spotify.com/v1';
     this.tokenUrl = 'https://accounts.spotify.com/api/token';
     this.token = null;
-    this.clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-    this.clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
   }
 
   async initializeToken() {
@@ -17,14 +15,19 @@ class SpotifyService {
   }
 
   async getAccessToken() {
-    const credentials = btoa(`${this.clientId}:${this.clientSecret}`);
+    const credentials = JSON.parse(localStorage.getItem('spotifyCredentials'));
+    if (!credentials) {
+      throw new Error('No se encontraron credenciales');
+    }
+    
+    const base64Credentials = btoa(`${credentials.clientId}:${credentials.clientSecret}`);
     
     try {
       const response = await axios.post(this.tokenUrl, 
         'grant_type=client_credentials',
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
+            'Authorization': `Basic ${base64Credentials}`,
             'Content-Type': 'application/x-www-form-urlencoded'
           }
         }
@@ -77,6 +80,19 @@ class SpotifyService {
       return response.data.items;
     } catch (error) {
       throw new Error('Error al obtener álbumes del artista');
+    }
+  }
+
+  async getAlbumById(albumId) {
+    const token = await this.initializeToken();
+    try {
+      const response = await axios.get(`${this.baseUrl}/albums/${albumId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error al obtener álbum:', error.response?.data || error);
+      throw new Error('Error al obtener información del álbum');
     }
   }
 }
