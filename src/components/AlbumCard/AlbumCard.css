@@ -1,45 +1,31 @@
 .album-card {
-  background-color: #282828;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 16px;
-  transition: all 0.3s ease;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .album-card:hover {
-  background-color: #3E3E3E;
+  background: rgba(255, 255, 255, 0.2);
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .album-image {
   width: 100%;
   aspect-ratio: 1;
+  object-fit: cover;
   border-radius: 4px;
   margin-bottom: 12px;
-  transition: transform 0.3s ease;
-}
-
-.album-card:hover .album-image {
-  transform: scale(1.05);
-}
-
-.album-info {
-  position: relative;
 }
 
 .album-name {
-  margin: 0 0 8px 0;
   color: white;
   font-size: 16px;
-  font-weight: 500;
-  font-family: 'DM Sans', sans-serif;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
+  margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .album-year {

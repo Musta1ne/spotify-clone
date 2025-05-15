@@ -78,6 +78,16 @@ class SpotifyService {
       throw new Error('Error al obtener álbumes del artista');
     }
   }
+
+  async getAlbumById(albumId) {
+      const token = await this.getAccessToken();
+      const response = await axios.get(`https://api.spotify.com/v1/albums/${albumId}`, {
+          headers: {
+              'Authorization': `Bearer ${token}`
+          }
+      });
+      return response.data;
+  }
 }
 
 export default new SpotifyService();
