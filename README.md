@@ -23,4 +23,4 @@ Un clon de Spotify desarrollado con React que permite buscar artistas, ver sus Ã
 
 ## Despliegue
 
-[Spotify Clone](https://spotify-clone-sigma-wheat.vercel.app/login)
+[Spotify Clone](https://spotify-clone-sigma-wheat.vercel.app)
